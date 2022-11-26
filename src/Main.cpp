@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 class CStr
-{
+{ 
     char *string = NULL;
 
     char *generateRandomString(int lengthOfString)
@@ -36,6 +36,16 @@ class CStr
             generateRandomString( lengthOfString );
         }
 
+        CStr(char *string[])
+        {
+            size_t lengthOfString = (unsigned) sizeof &string;
+
+            if ( string[lengthOfString] == 0 )
+            {
+                this -> string = (char *) string; 
+            }
+        }
+
         char *getString()
         {
             return string;
@@ -44,9 +54,10 @@ class CStr
 
 int main()
 {
-    CStr string;
+    CStr defaultString;
+    CStr currentString( defaultString );
 
-    std::cout << string.getString() << "\n";
+    std::cout << currentString.getString() << "\n";
 
     return 0;
 }

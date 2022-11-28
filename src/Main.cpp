@@ -3,6 +3,7 @@
 #include <string.h>
 
 using std::cout;
+using std::ostream;
 
 class CStr
 { 
@@ -10,13 +11,13 @@ class CStr
     int lengthOfString;
 
     char *generateRandomString(int lengthOfString)
-    {
-        srand(time(0));
+    { 
         const char letters[] = "abcdefghijklmnopqrstuvwxyz0";
 
         this -> string = new char[lengthOfString + 1]; 
         string[lengthOfString] = '\0';
-
+        
+        srand(time(0));
         for (int idx = 0; idx < lengthOfString; idx++)
         {
             string[idx] = letters[rand() % 27];
@@ -127,6 +128,21 @@ class CStr
             return *this;
         }
 
+        bool operator > (const CStr &object )
+        {
+            const char *otherString = object.string;
+
+            for (int idx = 0; idx < this -> lengthOfString; idx++)
+            {
+                if (this -> string[idx] > otherString[idx])
+                {
+                    return true; 
+                }
+            }
+
+            return false;
+        }
+
         char *getString()
         {
             return string;
@@ -136,16 +152,25 @@ class CStr
         {
             return lengthOfString;
         }
+
+        friend ostream& operator << (ostream &os, const CStr &object);
 };
+
+ostream& operator << (ostream &os, const CStr &object)
+{
+    os << object.string << "\n";
+
+    return os;
+}
 
 int main()
 {    
-    CStr randomString;
-    CStr stringLength(14);
-    randomString = stringLength.getString();
-
-    cout << randomString.getString() << "\n";
-    cout << stringLength.getString() << "\n";
+    CStr string_1, string_2;
+    bool result = string_1 > string_2;
+    
+    cout << string_1;
+    cout << string_2;
+    cout << result << "\n";
 
     return 0;
 }

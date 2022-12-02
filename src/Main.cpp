@@ -196,6 +196,11 @@ class CStrArray
                 return object_1.getLengthOfString() < object_2.getLengthOfString(); 
             });
         }
+
+        int binarySearch(CStr targetString)
+        {
+            return std::lower_bound(array, array + lengthOfCStrArray, targetString) - array;
+        }
 };
 
 int main()
@@ -210,10 +215,12 @@ int main()
     array[2] = string_3; 
 
     cout << array[0] << array[1] << array[2] << "\n";
-
     array.sortByLength();
-
     cout << array[0] << array[1] << array[2];
+
+    int resultOfBinarySearch = array.binarySearch(string_2);
+
+    cout << resultOfBinarySearch << "\n";
 
     return 0;
 }

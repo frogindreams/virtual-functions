@@ -208,7 +208,7 @@ class CStr
 
 ostream& operator << (ostream &os, const CStr &object)
 {
-    os << object.string << "\n";
+    os << object.string;
 
     return os;
 }
@@ -268,7 +268,19 @@ class CStrArray
 
             return true;
         }
+
+        friend ostream& operator << (ostream &os, const CStrArray &object);
 };
+
+ostream& operator << (ostream &os, const CStrArray &object)
+{
+    for (int idx = 0; idx < object.lengthOfCStrArray; idx++)
+    {
+        os << object.array[idx] << " ";
+    }
+
+    return os;
+}
 
 int main()
 {    
@@ -283,14 +295,20 @@ int main()
 
     cout << "Status of sort before: " << array.isSorted() << "\n";
 
-    cout << array[0] << array[1] << array[2] << "\n";
+    cout << array[0] << "\n";
+    cout << array[1] << "\n";
+    cout << array[2] << "\n\n";
     array.sortByContent();
-    cout << array[0] << array[1] << array[2];
+    cout << array[0] << "\n";
+    cout << array[1] << "\n";
+    cout << array[2] << "\n";
 
     cout << "Status of sort after: " << array.isSorted() << "\n";
 
     int resultOfBinarySearch = array.binarySearch(string_2);
     cout << "Binary Search: " << resultOfBinarySearch << "\n";
+
+    cout << "CStr Array: " << array << "\n";
 
     return 0;
 }

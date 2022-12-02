@@ -274,9 +274,12 @@ class CStrArray
 
 ostream& operator << (ostream &os, const CStrArray &object)
 {
-    for (int idx = 0; idx < object.lengthOfCStrArray; idx++)
+    if ( object.lengthOfCStrArray <= 50 )
     {
-        os << object.array[idx] << " ";
+        for (int idx = 0; idx < object.lengthOfCStrArray; idx++)
+        {
+            os << object.array[idx] << " ";
+        }
     }
 
     return os;

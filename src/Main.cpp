@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
 
 using std::cout;
 using std::ostream;
+using std::sort;
 
 class CStr
 { 
@@ -17,10 +19,9 @@ class CStr
         this -> string = new char[lengthOfString + 1]; 
         string[lengthOfString] = '\0';
         
-        srand(time(0));
         for (int idx = 0; idx < lengthOfString; idx++)
         {
-            string[idx] = letters[rand() % 27];
+            string[idx] = letters[rand() % 26];
         }
 
         return string;
@@ -28,9 +29,7 @@ class CStr
 
     int generateRandomNumber()
     {
-        srand(time(0));
-
-        return 1 + rand() % 19;
+        return rand() % 20;
     }
 
     public:
@@ -128,19 +127,70 @@ class CStr
             return *this;
         }
 
+        bool operator < (const CStr &object )
+        {
+            const char *otherString = object.string;
+
+            if ( this -> lengthOfString == object.lengthOfString )
+            {
+                for (int idx = 0; idx < this -> lengthOfString; idx++)
+                {
+                    if (this -> string[idx] < otherString[idx])
+                    {
+                        return true; 
+                    }
+
+                    else if ( this -> string[idx] > otherString[idx] )
+                    {
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            else 
+            {
+                if ( this -> lengthOfString < object.lengthOfString )
+                {
+                    return true;
+                }
+
+                else return false;
+            }
+        }
+
         bool operator > (const CStr &object )
         {
             const char *otherString = object.string;
 
-            for (int idx = 0; idx < this -> lengthOfString; idx++)
+            if ( this -> lengthOfString == object.lengthOfString )
             {
-                if (this -> string[idx] > otherString[idx])
+                for (int idx = 0; idx < this -> lengthOfString; idx++)
                 {
-                    return true; 
+                    if (this -> string[idx] > otherString[idx])
+                    {
+                        return true; 
+                    }
+
+                    else if ( this -> string[idx] < otherString[idx] )
+                    {
+                        return false;
+                    }
                 }
+
+                return false;
             }
 
-            return false;
+            else 
+            {
+                if ( this -> lengthOfString > object.lengthOfString )
+                {
+                    return true;
+                }
+
+                else return false;
+            }
         }
 
         char *getString()
@@ -158,19 +208,107 @@ class CStr
 
 ostream& operator << (ostream &os, const CStr &object)
 {
-    os << object.string << "\n";
+    os << object.string;
+
+    return os;
+}
+
+class CStrArray
+{
+    CStr *array = nullptr; 
+    int lengthOfCStrArray;
+
+    public:
+        CStrArray(int lengthOfCStrArray)
+        {
+            this -> lengthOfCStrArray = lengthOfCStrArray;
+            this -> array = new CStr[lengthOfCStrArray]; 
+        }
+
+        ~CStrArray()
+        {
+            delete[] array;
+        }
+
+        CStr& operator [] (int index)  
+        {
+            return array[index];
+        }
+
+        void sortByContent()
+        {
+            sort(array, array + lengthOfCStrArray, [](CStr object_1, CStr object_2) -> bool
+            {
+                return object_1 < object_2; 
+            });
+        }
+
+        void sortByLength()
+        {
+            sort(array, array + lengthOfCStrArray, [](CStr object_1, CStr object_2) -> bool
+            {
+                return object_1.getLengthOfString() < object_2.getLengthOfString(); 
+            });
+        }
+
+        int binarySearch(CStr targetString)
+        {
+            return std::lower_bound(array, array + lengthOfCStrArray, targetString) - array;
+        }
+
+        bool isSorted()
+        {
+            for (int idx = 0; idx < lengthOfCStrArray - 1; idx++)
+            {
+                if ( array[idx] > array[idx + 1] )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        friend ostream& operator << (ostream &os, const CStrArray &object);
+};
+
+ostream& operator << (ostream &os, const CStrArray &object)
+{
+    for (int idx = 0; idx < object.lengthOfCStrArray; idx++)
+    {
+        os << object.array[idx] << " ";
+    }
 
     return os;
 }
 
 int main()
 {    
-    CStr string_1, string_2;
-    bool result = string_1 > string_2;
-    
-    cout << string_1;
-    cout << string_2;
-    cout << result << "\n";
+    srand(time(0));
+
+    CStr string_1(3), string_2(3), string_3(3);
+    CStrArray array(3);
+
+    array[0] = string_1; 
+    array[1] = string_2; 
+    array[2] = string_3;
+
+    cout << "Status of sort before: " << array.isSorted() << "\n";
+
+    cout << array[0] << "\n";
+    cout << array[1] << "\n";
+    cout << array[2] << "\n\n";
+    array.sortByContent();
+    cout << array[0] << "\n";
+    cout << array[1] << "\n";
+    cout << array[2] << "\n";
+
+    cout << "Status of sort after: " << array.isSorted() << "\n";
+
+    int resultOfBinarySearch = array.binarySearch(string_2);
+    cout << "Binary Search: " << resultOfBinarySearch << "\n";
+
+    cout << "CStr Array: " << array << "\n";
 
     return 0;
 }

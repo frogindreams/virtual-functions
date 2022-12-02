@@ -237,7 +237,10 @@ class CStrArray
 
         void sortByContent()
         {
-            sort(array, array + lengthOfCStrArray);
+            sort(array, array + lengthOfCStrArray, [](CStr object_1, CStr object_2) -> bool
+            {
+                return object_1 < object_2; 
+            });
         }
 
         void sortByLength()

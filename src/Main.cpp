@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
 
 using std::cout;
 using std::ostream;
+using std::sort;
 
 class CStr
 { 
@@ -17,10 +19,9 @@ class CStr
         this -> string = new char[lengthOfString + 1]; 
         string[lengthOfString] = '\0';
         
-        srand(time(0));
         for (int idx = 0; idx < lengthOfString; idx++)
         {
-            string[idx] = letters[rand() % 27];
+            string[idx] = letters[rand() % 26];
         }
 
         return string;
@@ -28,9 +29,7 @@ class CStr
 
     int generateRandomNumber()
     {
-        srand(time(0));
-
-        return 1 + rand() % 19;
+        return rand() % 20;
     }
 
     public:
@@ -128,13 +127,13 @@ class CStr
             return *this;
         }
 
-        bool operator > (const CStr &object )
+        bool operator < (const CStr &object )
         {
             const char *otherString = object.string;
 
             for (int idx = 0; idx < this -> lengthOfString; idx++)
             {
-                if (this -> string[idx] > otherString[idx])
+                if (this -> string[idx] < otherString[idx])
                 {
                     return true; 
                 }
@@ -163,14 +162,58 @@ ostream& operator << (ostream &os, const CStr &object)
     return os;
 }
 
+class CStrArray
+{
+    CStr *array = nullptr; 
+    int lengthOfCStrArray;
+
+    public:
+        CStrArray(int lengthOfCStrArray)
+        {
+            this -> lengthOfCStrArray = lengthOfCStrArray;
+            this -> array = new CStr[lengthOfCStrArray]; 
+        }
+
+        ~CStrArray()
+        {
+            delete[] array;
+        }
+
+        CStr& operator [] (int index)  
+        {
+            return array[index];
+        }
+
+        void sortByContent()
+        {
+            sort(array, array + lengthOfCStrArray);
+        }
+
+        void sortByLength()
+        {
+            sort(array, array + lengthOfCStrArray, [](CStr object_1, CStr object_2) -> bool
+            {
+                return object_1.getLengthOfString() < object_2.getLengthOfString(); 
+            });
+        }
+};
+
 int main()
 {    
-    CStr string_1, string_2;
-    bool result = string_1 > string_2;
-    
-    cout << string_1;
-    cout << string_2;
-    cout << result << "\n";
+    srand(time(0));
+
+    CStr string_1, string_2, string_3;
+    CStrArray array(3);
+
+    array[0] = string_1; 
+    array[1] = string_2; 
+    array[2] = string_3; 
+
+    cout << array[0] << array[1] << array[2] << "\n";
+
+    array.sortByLength();
+
+    cout << array[0] << array[1] << array[2];
 
     return 0;
 }

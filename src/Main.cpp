@@ -131,15 +131,66 @@ class CStr
         {
             const char *otherString = object.string;
 
-            for (int idx = 0; idx < this -> lengthOfString; idx++)
+            if ( this -> lengthOfString == object.lengthOfString )
             {
-                if (this -> string[idx] < otherString[idx])
+                for (int idx = 0; idx < this -> lengthOfString; idx++)
                 {
-                    return true; 
+                    if (this -> string[idx] < otherString[idx])
+                    {
+                        return true; 
+                    }
+
+                    else if ( this -> string[idx] > otherString[idx] )
+                    {
+                        return false;
+                    }
                 }
+
+                return false;
             }
 
-            return false;
+            else 
+            {
+                if ( this -> lengthOfString < object.lengthOfString )
+                {
+                    return true;
+                }
+
+                else return false;
+            }
+        }
+
+        bool operator > (const CStr &object )
+        {
+            const char *otherString = object.string;
+
+            if ( this -> lengthOfString == object.lengthOfString )
+            {
+                for (int idx = 0; idx < this -> lengthOfString; idx++)
+                {
+                    if (this -> string[idx] > otherString[idx])
+                    {
+                        return true; 
+                    }
+
+                    else if ( this -> string[idx] < otherString[idx] )
+                    {
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            else 
+            {
+                if ( this -> lengthOfString > object.lengthOfString )
+                {
+                    return true;
+                }
+
+                else return false;
+            }
         }
 
         char *getString()
@@ -201,26 +252,42 @@ class CStrArray
         {
             return std::lower_bound(array, array + lengthOfCStrArray, targetString) - array;
         }
+
+        bool isSorted()
+        {
+            for (int idx = 0; idx < lengthOfCStrArray - 1; idx++)
+            {
+                if ( array[idx] > array[idx + 1] )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 };
 
 int main()
 {    
     srand(time(0));
 
-    CStr string_1, string_2, string_3;
+    CStr string_1(3), string_2(3), string_3(3);
     CStrArray array(3);
 
     array[0] = string_1; 
     array[1] = string_2; 
-    array[2] = string_3; 
+    array[2] = string_3;
+
+    cout << "Status of sort before: " << array.isSorted() << "\n";
 
     cout << array[0] << array[1] << array[2] << "\n";
-    array.sortByLength();
+    array.sortByContent();
     cout << array[0] << array[1] << array[2];
 
-    int resultOfBinarySearch = array.binarySearch(string_2);
+    cout << "Status of sort after: " << array.isSorted() << "\n";
 
-    cout << resultOfBinarySearch << "\n";
+    int resultOfBinarySearch = array.binarySearch(string_2);
+    cout << "Binary Search: " << resultOfBinarySearch << "\n";
 
     return 0;
 }

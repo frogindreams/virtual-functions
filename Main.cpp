@@ -53,6 +53,10 @@ class SKbrd : SBase
     public:
         int get() override
         {
+            std::string lineOfNumbers = "";
+
+            getline(std::cin, lineOfNumbers);
+
             return -1;
         }
 
@@ -76,6 +80,9 @@ int main() {
 
     SFile file(cfilename);
     std::cout << file.get() << "\n";
+
+    SKbrd input;
+    std::cout << input.get() << "\n";
 
     return 0;
 }

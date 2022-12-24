@@ -1,9 +1,10 @@
+#include <cstdlib>
 #include <algorithm>
 #include <cwchar>
-#include <exception>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <queue>
 
 class SBase 
 {
@@ -66,23 +67,29 @@ class SKbrd : SBase
 class SQueue : SBase
 {
     public:
+        SQueue(int sizeOfQueue) 
+        {
+            this -> sizeOfQueue = sizeOfQueue;
+        }
+
         int get() override
         {
+            std::queue<int> queueOfNumbers;
+
+            while (queueOfNumbers.size() != sizeOfQueue) 
+            {
+                queueOfNumbers.push( rand() % 100 );
+            }
+
             return -1;
         }
 
     private:
+        int sizeOfQueue;
 };
 
 int main() {
-    std::string sfilename = "file.txt";
-    const char* cfilename = sfilename.c_str();
-
-    SFile file(cfilename);
-    std::cout << file.get() << "\n";
-
-    SKbrd input;
-    std::cout << input.get() << "\n";
+    srand(time(0));
 
     return 0;
 }

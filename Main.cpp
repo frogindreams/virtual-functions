@@ -1,10 +1,6 @@
-#include <cstdlib>
-#include <algorithm>
-#include <cwchar>
+#include <fstream>
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <queue>
+#include <map>
 
 class SBase 
 {
@@ -19,10 +15,15 @@ class SKbrd : public SBase
     public:
         int get() override
         {
+            if (std::cin.peek() == '\n') 
+            { 
+                return -1; 
+            }
+
             int inputNumber;
             std::cin >> inputNumber;
 
-            return -1;
+            return inputNumber;
         }
 
     private:
@@ -31,101 +32,155 @@ class SKbrd : public SBase
 class SFile : public SBase 
 {
     public:
+        SFile() 
+        {
+            file.open("file.txt");
+        }
+
+        ~SFile()
+        {
+            file.close();
+        }
+
         int get() override
         {
-            int isOk = 0;
-            char inputNumber[255];
-            const char* filename = "file.txt";
-            FILE* openedFile = fopen(filename, "r+");
-
-            if (!openedFile) 
-            {
-                perror("File opening failed");
-                return isOk;
+            if (!file.is_open()) 
+            { 
+                return -1; 
             }
 
-            printf("Enter your number for file: ");
-            fgets(inputNumber, 255, stdin);
-            fputs(inputNumber, openedFile);
-            rewind(openedFile);
-
-            int ch;
-            while ((ch = fgetc(openedFile)) != EOF) 
+            if (file.eof()) 
             {
-                putchar(ch);
+                file.close();
+                return -1;
             }
 
-            if (ferror(openedFile)) 
-            {
-                puts("I/O error when reading");
-            } 
-            
-            else if (feof(openedFile))
-            {
-                isOk = -1;
-            }
+            int inputNumber;
+            file >> inputNumber;
 
-            fclose(openedFile);
-            return isOk;
+            return inputNumber;
         }
 
     private:
+        std::ifstream file;
 };
 
 class SQueue : public SBase
 {
-    int *queue, sizeOfQueue;
-
-    void initQueue() 
-    {
-        queue = new int[sizeOfQueue];
-        for (int idx = 0; idx < sizeOfQueue - 1; idx++) 
-        {
-            queue[idx] = rand() % 100;
-        }
-    }
-
     public:
-        SQueue(int sizeOfQueue) 
+        SQueue(int lengthOfQueue) 
         {
-            this -> sizeOfQueue = sizeOfQueue;
-        }
+            int* arrayWithRandomNumbers = new int[lengthOfQueue];
 
-        ~SQueue() 
-        {
-            delete[] queue;
-        }
-
-        int get() override
-        {
-            initQueue();
-
-            int inputNumber;
-            printf("Enter your number for queue: ");
-            std::cin >> inputNumber;
-
-            queue[sizeOfQueue - 1] = inputNumber;
-
-            return -1;
-        }
-
-        void showQueue() 
-        {
-            for (int idx = 0; idx < sizeOfQueue; idx++) 
+            for (int idx = 0; idx < lengthOfQueue; idx++) 
             {
-                std::cout << queue[idx] << " ";
+                arrayWithRandomNumbers[idx] = rand() % 100;
             }
 
-            std::cout << "\n";
+            this -> lengthOfQueue = lengthOfQueue;
+            queue = arrayWithRandomNumbers;
+            currentItem = 0;
         }
+
+        int get() override 
+        {
+            if (currentItem >= lengthOfQueue) 
+            {
+                return -1;
+            }
+
+            else 
+            {
+                return queue[currentItem++];
+            } 
+        }
+
+    private:
+        int* queue, lengthOfQueue, currentItem;
+};
+
+class Freq {
+    public:
+        void calc(SBase* plainObject) 
+        {
+            int summaryOfAllEnteredNumbers = 0;
+            int plainObjectNumber = (*plainObject).get();
+
+            while (plainObjectNumber != -1) 
+            {
+                numberItselfAndCounter[plainObjectNumber]++;
+                summaryOfAllEnteredNumbers += plainObjectNumber;
+                plainObjectNumber = (*plainObject).get();
+            }
+
+            printf("Summary of all numbers: %d", summaryOfAllEnteredNumbers);
+        }
+
+        friend std::ostream& operator << (std::ostream &os, const Freq &pobj)
+        {
+            auto begin = pobj.numberItselfAndCounter.begin();
+            auto end = pobj.numberItselfAndCounter.end();
+
+            for (auto queue = begin; queue != end; queue++) 
+            {
+                os << (*queue).first << " " << (*queue).second;
+            }
+
+            return os;
+        }
+
+    private:
+        std::map<int, int> numberItselfAndCounter;
+};
+
+class Diap : Freq {
+    public:
+        void calc(SBase* plainObject)
+        { 
+            int plainObjectNumber = (*plainObject).get();
+
+            while (plainObjectNumber != -1) 
+            {
+                numberItselfAndCounter[plainObjectNumber]++;
+                summaryOfAllEnteredNumbers += plainObjectNumber;
+
+                if (plainObjectNumber > maxNumber) 
+                    maxNumber = plainObjectNumber;
+
+                if (plainObjectNumber < minNumber) 
+                    minNumber = plainObjectNumber;
+
+
+                quantityOfEnteredNumbers++;
+                plainObjectNumber = (*plainObject).get();
+            }
+        }
+
+        friend std::ostream& operator << (std::ostream &os, const Diap &pobj)
+        {
+            auto begin = pobj.numberItselfAndCounter.begin();
+            auto end = pobj.numberItselfAndCounter.end();
+
+            for (auto queue = begin; queue != end; queue++) 
+            {
+                os << (*queue).first << " " << (*queue).second;
+            }
+
+            return os;
+        }
+
+    private:
+        std::map<int, int> numberItselfAndCounter;
+        int maxNumber = -1;
+        int minNumber = 1e9;
+        int quantityOfEnteredNumbers = 0;
+        int summaryOfAllEnteredNumbers = 0;
 };
 
 int main() {
     srand(time(0));
 
-    SQueue queue(5);
-    queue.get();
-    queue.showQueue();
+    SKbrd input;
 
     return 0;
 }
